@@ -33,7 +33,9 @@ const AdminLayout = () => {
               <Lock className="w-8 h-8 text-primary" />
             </div>
             <h1 className="font-heading text-2xl font-bold text-foreground">Admin Login</h1>
-            <p className="text-muted-foreground text-sm mt-2">Enter admin password to continue</p>
+            <p className="text-muted-foreground text-sm mt-2">
+              Use the clinic admin email and password to continue.
+            </p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">

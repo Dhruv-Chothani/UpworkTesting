@@ -6,21 +6,21 @@ const doctors = [
     role: "Founder & Senior Consultant",
     description: "With over 28 years of experience in classical homeopathy, Dr. Manohara has dedicated his life to healing through natural medicine.",
     specialties: ["Constitutional Treatment", "Chronic Diseases", "Research"],
-    image: "/doctors/dr-manohara.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+M.+C+Manohara&size=400&background=6366f1&color=fff&bold=true",
   },
   {
     name: "Dr. Snehal Bobde",
     role: "Consultant Homeopath",
     description: "Specializing in women's health and pediatric care, Dr. Snehal brings compassionate expertise to every consultation.",
     specialties: ["Women's Health", "Pediatrics", "Skin Disorders"],
-    image: "/doctors/dr-snehal.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+Snehal+Bobde&size=400&background=6366f1&color=fff&bold=true",
   },
   {
     name: "Dr. Sujatha G Kankarne",
     role: "Consultant Homeopath",
     description: "Expert in treating lifestyle disorders and mental health conditions with a gentle, understanding approach.",
     specialties: ["Mental Health", "Lifestyle Disorders", "Allergies"],
-    image: "/doctors/dr-sujatha.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+Sujatha+G+Kankarne&size=400&background=6366f1&color=fff&bold=true",
   },
 ];
 

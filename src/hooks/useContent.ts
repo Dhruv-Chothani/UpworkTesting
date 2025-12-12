@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { apiFetch } from '../lib/api';
+import { useEffect, useState, useCallback } from 'react';
+import { apiFetch } from '@/lib/api';
 
 export interface HomeContent {
   heroTitle: string;
@@ -32,47 +32,41 @@ export const useContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchContent = async () => {
+  const loadContent = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await apiFetch<HomeContent>('/api/content/home');
-      setContent(data);
+      setContent({ ...defaultContent, ...data });
     } catch (err) {
       console.error('Failed to fetch content:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch content');
-      // Use default content on error
       setContent(defaultContent);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchContent();
   }, []);
 
+  useEffect(() => {
+    loadContent();
+  }, [loadContent]);
+
   const updateContent = async (newContent: Partial<HomeContent>) => {
-    try {
-      const updated = { ...content, ...newContent };
-      const saved = await apiFetch<HomeContent>('/api/content/home', {
-        method: 'PUT',
-        body: JSON.stringify(updated),
-      });
-      setContent(saved);
-      return saved;
-    } catch (err) {
-      console.error('Failed to update content:', err);
-      throw err;
-    }
+    const updated = await apiFetch<HomeContent>('/api/content/home', {
+      method: 'PUT',
+      credentials: 'include',
+      body: JSON.stringify({ ...content, ...newContent }),
+    });
+    setContent({ ...defaultContent, ...updated });
+    return updated;
   };
 
-  return { 
-    content, 
-    loading, 
-    error, 
-    updateContent, 
+  return {
+    content,
+    loading,
+    error,
+    updateContent,
     defaultContent,
-    reload: fetchContent,
+    reload: loadContent,
   };
 };

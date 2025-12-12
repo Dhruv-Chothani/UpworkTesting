@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch } from '@/lib/api';
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -10,30 +10,49 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(false);
 
+  // On mount, check current session with backend
   useEffect(() => {
-    apiFetch('/api/auth/me')
-      .then(() => setIsAdmin(true))
-      .catch(() => setIsAdmin(false));
+    const checkSession = async () => {
+      try {
+        const res = await apiFetch<{ admin: { email: string } | null }>('/api/auth/me', {
+          credentials: 'include',
+        });
+        setIsAdmin(!!res?.admin);
+      } catch {
+        setIsAdmin(false);
+      } finally {
+        setChecked(true);
+      }
+    };
+    checkSession();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
       await apiFetch('/api/auth/login', {
         method: 'POST',
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
       setIsAdmin(true);
       return { ok: true };
-    } catch (err: any) {
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Invalid email or password';
       setIsAdmin(false);
-      return { ok: false, error: err?.message || 'Invalid email or password' };
+      return { ok: false, error: message || 'Invalid email or password' };
     }
   };
 
   const logout = async () => {
-    await apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      // ignore
+    }
     setIsAdmin(false);
   };
 

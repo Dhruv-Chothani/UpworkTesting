@@ -5,32 +5,22 @@ import { usePublicBlogs } from "@/hooks/usePublicBlogs";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { apiFetch } from "@/lib/api";
 import { Blog } from "@/hooks/usePublicBlogs";
 
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { blogs } = usePublicBlogs();
+  const { blogs, loading: blogsLoading } = usePublicBlogs();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBlog = async () => {
-      if (!slug) return;
-      try {
-        setLoading(true);
-        const data = await apiFetch<Blog>(`/api/blogs/${slug}`);
-        setBlog({ ...data, id: data._id || data.id });
-      } catch (err) {
-        console.error('Failed to fetch blog:', err);
-        setBlog(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBlog();
-  }, [slug]);
+    if (!slug) return;
+    setLoading(true);
+    const found = blogs.find(b => b.slug === slug);
+    setBlog(found || null);
+    setLoading(false);
+  }, [blogs, slug]);
   
   if (!blog) {
     return (
@@ -54,7 +44,7 @@ const BlogPost = () => {
     );
   }
 
-  if (loading) {
+  if (loading || blogsLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />

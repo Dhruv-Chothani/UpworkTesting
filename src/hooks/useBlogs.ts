@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { apiFetch } from '../lib/api';
+import { useEffect, useState, useCallback } from 'react';
+import { apiFetch } from '@/lib/api';
 
 export interface Blog {
   id: string;
@@ -11,26 +11,45 @@ export interface Blog {
   image: string;
   author: string;
   createdAt: string;
+  date?: string;
   category: string;
   published: boolean;
 }
+
+const normalizeBlog = (blog: Partial<Blog>): Blog => ({
+  id: (blog._id as string) || blog.id || crypto.randomUUID(),
+  _id: blog._id,
+  title: blog.title || '',
+  slug: blog.slug || '',
+  excerpt: blog.excerpt || '',
+  content: blog.content || '',
+  image: blog.image || '',
+  author: blog.author || 'Admin',
+  createdAt:
+    blog.createdAt ||
+    (blog as any)?.date ||
+    new Date().toISOString().split('T')[0],
+  date:
+    blog.createdAt ||
+    (blog as any)?.date ||
+    new Date().toISOString().split('T')[0],
+  category: blog.category || 'General',
+  published:
+    typeof blog.published === 'boolean' ? blog.published : false,
+});
 
 export const useBlogs = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchBlogs = async () => {
+  const loadBlogs = useCallback(async (adminView = false) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiFetch<Blog[]>('/api/blogs/all');
-      // Normalize IDs - backend uses _id, frontend expects id
-      const normalized = data.map(blog => ({
-        ...blog,
-        id: blog._id || blog.id,
-      }));
-      setBlogs(normalized);
+      const endpoint = adminView ? '/api/blogs/all' : '/api/blogs';
+      const data = await apiFetch<Blog[]>(endpoint, { credentials: 'include' });
+      setBlogs(data.map(normalizeBlog));
     } catch (err) {
       console.error('Failed to fetch blogs:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
@@ -38,67 +57,52 @@ export const useBlogs = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchBlogs();
   }, []);
 
+  useEffect(() => {
+    loadBlogs();
+  }, [loadBlogs]);
+
   const addBlog = async (blog: Omit<Blog, 'id' | 'createdAt' | '_id'>) => {
-    try {
-      const newBlog = await apiFetch<Blog>('/api/blogs', {
-        method: 'POST',
-        body: JSON.stringify({
-          ...blog,
-          createdAt: new Date().toISOString().split('T')[0],
-        }),
-      });
-      const normalized = { ...newBlog, id: newBlog._id || newBlog.id };
-      setBlogs(prev => [normalized, ...prev]);
-      return normalized;
-    } catch (err) {
-      console.error('Failed to create blog:', err);
-      throw err;
-    }
+    const created = await apiFetch<Blog>('/api/blogs', {
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify(blog),
+    });
+    const normalized = normalizeBlog(created);
+    setBlogs([normalized, ...blogs]);
+    return normalized;
   };
 
   const updateBlog = async (id: string, updates: Partial<Blog>) => {
-    try {
-      const updated = await apiFetch<Blog>(`/api/blogs/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(updates),
-      });
-      const normalized = { ...updated, id: updated._id || updated.id };
-      setBlogs(prev => prev.map(b => b.id === id ? normalized : b));
-      return normalized;
-    } catch (err) {
-      console.error('Failed to update blog:', err);
-      throw err;
-    }
+    const updated = await apiFetch<Blog>(`/api/blogs/${id}`, {
+      method: 'PUT',
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+    const normalized = normalizeBlog(updated);
+    setBlogs(blogs.map((b) => (b.id === id || b._id === id ? normalized : b)));
+    return normalized;
   };
 
   const deleteBlog = async (id: string) => {
-    try {
-      await apiFetch(`/api/blogs/${id}`, {
-        method: 'DELETE',
-      });
-      setBlogs(prev => prev.filter(b => b.id !== id));
-    } catch (err) {
-      console.error('Failed to delete blog:', err);
-      throw err;
-    }
+    await apiFetch(`/api/blogs/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    setBlogs(blogs.filter((b) => b.id !== id && b._id !== id));
   };
 
-  const getBlogBySlug = (slug: string) => blogs.find(b => b.slug === slug);
+  const getBlogBySlug = (slug: string) => blogs.find((b) => b.slug === slug);
 
-  return { 
-    blogs, 
-    loading, 
-    error, 
-    addBlog, 
-    updateBlog, 
-    deleteBlog, 
+  return {
+    blogs,
+    loading,
+    error,
+    addBlog,
+    updateBlog,
+    deleteBlog,
     getBlogBySlug,
-    reload: fetchBlogs,
+    reload: () => loadBlogs(true),
   };
 };

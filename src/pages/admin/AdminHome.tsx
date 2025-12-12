@@ -1,18 +1,15 @@
 import { useContent } from "@/hooks/useContent";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminHome = () => {
-  const { content, updateContent, loading } = useContent();
+  const { content, updateContent, loading, defaultContent } = useContent();
   const { toast } = useToast();
   const [form, setForm] = useState(content);
 
-  // Update form when content loads from backend
   useEffect(() => {
-    if (content) {
-      setForm(content);
-    }
+    setForm(content);
   }, [content]);
 
   const handleSave = async () => {
@@ -20,12 +17,22 @@ const AdminHome = () => {
       await updateContent(form);
       toast({ title: "Saved!", description: "Home page content updated." });
     } catch (error) {
-      toast({ 
-        title: "Error", 
+      toast({
+        title: "Error",
         description: error instanceof Error ? error.message : "Failed to save content",
-        variant: "destructive" 
+        variant: "destructive",
       });
     }
+  };
+
+  const handleAddStat = () => {
+    setForm({ ...form, stats: [...form.stats, { value: "", label: "" }] });
+  };
+
+  const handleReset = () => {
+    setForm(defaultContent);
+    updateContent(defaultContent);
+    toast({ title: "Reset", description: "Home content restored to default." });
   };
 
   if (loading) {
@@ -45,34 +52,71 @@ const AdminHome = () => {
       <div className="bg-card rounded-xl p-6 shadow-card space-y-6 max-w-2xl">
         <div>
           <label className="block text-sm font-medium mb-2">Hero Badge Text</label>
-          <input value={form.heroBadgeText} onChange={e => setForm({...form, heroBadgeText: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+          <input
+            value={form.heroBadgeText}
+            onChange={(e) => setForm({ ...form, heroBadgeText: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">Hero Title</label>
-          <input value={form.heroTitle} onChange={e => setForm({...form, heroTitle: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+          <input
+            value={form.heroTitle}
+            onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-          <textarea value={form.heroSubtitle} onChange={e => setForm({...form, heroSubtitle: e.target.value})} rows={3} className="w-full px-4 py-2 border rounded-lg" />
+          <textarea
+            value={form.heroSubtitle}
+            onChange={(e) => setForm({ ...form, heroSubtitle: e.target.value })}
+            rows={3}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">Hero Image URL</label>
-          <input value={form.heroImage} onChange={e => setForm({...form, heroImage: e.target.value})} className="w-full px-4 py-2 border rounded-lg" placeholder="Leave empty for default" />
+          <input
+            value={form.heroImage}
+            onChange={(e) => setForm({ ...form, heroImage: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+            placeholder="Leave empty for default"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">About Title</label>
-          <input value={form.aboutTitle} onChange={e => setForm({...form, aboutTitle: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+          <input
+            value={form.aboutTitle}
+            onChange={(e) => setForm({ ...form, aboutTitle: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">About Description</label>
-          <textarea value={form.aboutDescription} onChange={e => setForm({...form, aboutDescription: e.target.value})} rows={4} className="w-full px-4 py-2 border rounded-lg" />
+          <textarea
+            value={form.aboutDescription}
+            onChange={(e) => setForm({ ...form, aboutDescription: e.target.value })}
+            rows={4}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">About Image URL</label>
-          <input value={form.aboutImage} onChange={e => setForm({...form, aboutImage: e.target.value})} className="w-full px-4 py-2 border rounded-lg" placeholder="Leave empty for default" />
+          <input
+            value={form.aboutImage}
+            onChange={(e) => setForm({ ...form, aboutImage: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+            placeholder="Leave empty for default"
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-4">Stats</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium">Stats</label>
+            <Button size="sm" variant="outline" onClick={handleAddStat}>
+              Add Stat
+            </Button>
+          </div>
           <div className="space-y-4">
             {form.stats.map((stat, index) => (
               <div key={index} className="grid grid-cols-2 gap-4">
@@ -80,10 +124,10 @@ const AdminHome = () => {
                   <label className="block text-xs text-muted-foreground mb-1">Value</label>
                   <input
                     value={stat.value}
-                    onChange={e => {
-                      const newStats = [...form.stats];
-                      newStats[index] = { ...stat, value: e.target.value };
-                      setForm({ ...form, stats: newStats });
+                    onChange={(e) => {
+                      const next = [...form.stats];
+                      next[index] = { ...stat, value: e.target.value };
+                      setForm({ ...form, stats: next });
                     }}
                     className="w-full px-4 py-2 border rounded-lg"
                     placeholder="28+"
@@ -93,10 +137,10 @@ const AdminHome = () => {
                   <label className="block text-xs text-muted-foreground mb-1">Label</label>
                   <input
                     value={stat.label}
-                    onChange={e => {
-                      const newStats = [...form.stats];
-                      newStats[index] = { ...stat, label: e.target.value };
-                      setForm({ ...form, stats: newStats });
+                    onChange={(e) => {
+                      const next = [...form.stats];
+                      next[index] = { ...stat, label: e.target.value };
+                      setForm({ ...form, stats: next });
                     }}
                     className="w-full px-4 py-2 border rounded-lg"
                     placeholder="Years Experience"
@@ -106,7 +150,14 @@ const AdminHome = () => {
             ))}
           </div>
         </div>
-        <Button variant="hero" onClick={handleSave} className="w-full">Save Changes</Button>
+        <div className="flex gap-3">
+          <Button variant="hero" onClick={handleSave} className="flex-1">
+            Save Changes
+          </Button>
+          <Button variant="outline" onClick={handleReset}>
+            Reset
+          </Button>
+        </div>
       </div>
     </div>
   );

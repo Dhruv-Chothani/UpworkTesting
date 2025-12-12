@@ -12,7 +12,7 @@ const doctors = [
     specialties: ["Constitutional Treatment", "Chronic Diseases", "Research", "Cancer Support"],
     education: "BHMS",
     experience: "28+ Years",
-    image: "/doctors/dr-manohara.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+M.+C+Manohara&size=400&background=6366f1&color=fff&bold=true",
     clinic: "MANU HOMOEOPATHY CLINIC",
     address: "165, E & F block, Near Saibaba temple, Ramakrishnanagara, Mysuru – 570022",
     phone: "0821-2463482"
@@ -24,7 +24,7 @@ const doctors = [
     specialties: ["Women's Health", "Pediatrics", "Skin Disorders", "Hormonal Imbalances"],
     education: "BHMS",
     experience: "15+ Years",
-    image: "/doctors/dr-snehal.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+Snehal+Bobde&size=400&background=6366f1&color=fff&bold=true",
     clinic: "VAIBHAVI HOMOEOPATHY CLINIC",
     address: "#23, MIG 2, group-3, 1st floor, Opposite to Mansarovar Cloth Store, KHB colony, Hootagalli, Mysuru - 570018"
   },
@@ -35,7 +35,7 @@ const doctors = [
     specialties: ["Mental Health", "Lifestyle Disorders", "Allergies", "Anxiety & Depression"],
     education: "BHMS",
     experience: "12+ Years",
-    image: "/doctors/dr-sujatha.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+Sujatha+G+Kankarne&size=400&background=6366f1&color=fff&bold=true",
     clinic: "SHARADA HOMOEOPATHY CLINIC",
     address: "#386, 5th main, 1st stage, vijaynagar, Mysuru -570017",
     phone: "9481239854"
@@ -47,7 +47,7 @@ const doctors = [
     specialties: ["Chronic Diseases", "Preventive Medicine", "General Practice"],
     education: "BHMS",
     experience: "10+ Years",
-    image: "/doctors/dr-supraj.jpg",
+    image: "https://ui-avatars.com/api/?name=Dr.+Supraj+Koulagi&size=400&background=6366f1&color=fff&bold=true",
     clinic: "KOULAGI HOMOEOPATHY CLINIC",
     address: "3584, Kabini Road, 18th cross, Nanjanagudu – 571301",
     phone: "9739097616"
