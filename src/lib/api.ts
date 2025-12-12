@@ -1,8 +1,13 @@
-// Default to backend on 5000; can be overridden via VITE_API_URL
-let API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Default to backend URL; can be overridden via VITE_API_URL
+let API_BASE = import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app';
 
 // Normalize API_BASE: remove ALL trailing slashes and whitespace
 API_BASE = String(API_BASE).trim().replace(/\/+$/, '');
+
+// Log the API base URL in development
+if (import.meta.env.DEV) {
+  console.log('API Base URL:', API_BASE);
+}
 
 // Build URL without double slashes
 const withBase = (path: string) => {
@@ -31,7 +36,7 @@ export async function apiFetch<T>(
   const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
   const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const res = await fetch(url, {
+  const fetchOptions: RequestInit = {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +44,14 @@ export async function apiFetch<T>(
       ...authHeader,
     },
     credentials: 'include',
-  });
+    mode: 'cors',
+  };
+
+  if (import.meta.env.DEV) {
+    console.log(`[API] ${options.method || 'GET'} ${path} → ${url}`, { options: fetchOptions });
+  }
+
+  const res = await fetch(url, fetchOptions);
 
   if (!res.ok) {
     const message = await res.text();
