@@ -8,6 +8,20 @@ type User = {
   createdAt: string;
 };
 
+type ApiResponse<T = any> = T & {
+  message?: string;
+  error?: string;
+};
+
+type AuthResponse = {
+  token?: string;
+  admin?: User;
+};
+
+type MeResponse = {
+  admin: User;
+};
+
 type AuthContextType = {
   user: User | null;
   loading: boolean;
@@ -26,8 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const data = await apiFetch('/api/auth/me');
-        setUser(data.admin);
+        console.log('Checking authentication status...');
+        const response: MeResponse = await apiFetch('/api/auth/me');
+        console.log('Auth check response:', response);
+        if (response && response.admin) {
+          setUser(response.admin);
+        }
       } catch (error) {
         console.error('Auth check failed:', error);
         setUser(null);
@@ -39,7 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
+  interface ApiError {
+    message: string;
+    status?: number;
+  }
+
   const login = async (email: string, password: string) => {
+    console.log('Attempting login with:', { email });
     try {
       const response = await fetch(apiFetch('/api/auth/login'), {
         method: 'POST',
@@ -48,19 +72,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('Login response status:', response.status);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        let errorMessage = 'Login failed';
+        try {
+          const errorData: { message?: string } = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error('Login error response:', errorData);
+        } catch (e) {
+          console.error('Failed to parse error response:', e);
+          errorMessage = response.statusText || errorMessage;
+        }
+        const error: ApiError = new Error(errorMessage);
+        error.status = response.status;
+        throw error;
       }
 
-      const { token } = await response.json();
-      if (token) {
-        localStorage.setItem('mh_admin_token', token);
+      // The token is in the response body (for backward compatibility)
+      const data: AuthResponse = await response.json();
+      console.log('Login successful, token received:', !!data.token);
+      
+      if (data.token) {
+        localStorage.setItem('mh_admin_token', data.token);
       }
 
-      // Get user data
-      const userData = await apiFetch('/api/auth/me');
+      // Get user data using the cookie that was set
+      console.log('Fetching user data...');
+      const userData: MeResponse = await apiFetch('/api/auth/me');
+      console.log('User data response:', userData);
+      
+      if (!userData || !userData.admin) {
+        console.error('Invalid user data received:', userData);
+        throw new Error('Failed to fetch user data');
+      }
+      
       setUser(userData.admin);
+      console.log('Login successful, navigating to /admin');
       navigate('/admin');
     } catch (error) {
       console.error('Login error:', error);
