@@ -76,7 +76,7 @@ export default function Login() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-4">
             <button
               type="submit"
               disabled={loading}
@@ -84,6 +84,20 @@ export default function Login() {
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
+            
+            <div className="text-center text-sm">
+              <span className="text-gray-600">Don't have an account? </span>
+              <a 
+                href="/admin/register" 
+                className="font-medium text-blue-600 hover:text-blue-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/admin/register');
+                }}
+              >
+                Register
+              </a>
+            </div>
           </div>
         </form>
       </div>

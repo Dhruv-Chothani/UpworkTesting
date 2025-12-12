@@ -9,8 +9,25 @@ const AdminBlogs = () => {
   const { blogs, addBlog, updateBlog, deleteBlog, loading } = useBlogs();
   const { toast } = useToast();
 
-  const [editing, setEditing] = useState<Blog | null>(null);
+  const [editing, setEditing] = useState<Partial<Blog> | null>(null);
   const [isNew, setIsNew] = useState(false);
+
+  const handleNewBlog = () => {
+    setEditing({
+      id: '',
+      title: '',
+      slug: '',
+      excerpt: '',
+      content: '',
+      image: '',
+      author: 'Dr. Manohara MC',
+      category: 'Education',
+      published: false,
+      date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
+    });
+    setIsNew(true);
+  };
 
   const emptyBlog: Blog = {
     id: "",
@@ -23,6 +40,41 @@ const AdminBlogs = () => {
     category: "Education",
     published: false,
     date: new Date().toISOString().split("T")[0],
+    createdAt: new Date().toISOString(),
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      const reader = new FileReader();
+      return new Promise<string>((resolve, reject) => {
+        reader.onloadend = async () => {
+          try {
+            // Create a preview URL
+            const previewUrl = URL.createObjectURL(file);
+            
+            // Update the form with the preview URL immediately
+            if (editing) {
+              setEditing({
+                ...editing,
+                image: previewUrl,
+                // Store the file object for upload when saving
+                _imageFile: file,
+              });
+            }
+            
+            resolve(previewUrl);
+          } catch (error) {
+            console.error('Error processing image:', error);
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
   };
 
   const handleSave = async () => {
@@ -39,16 +91,30 @@ const AdminBlogs = () => {
     }
 
     try {
+      // Create a copy of the editing state without the _imageFile property
+      const blogToSave = { ...editing };
+      
+      // If there's a new image file, it will be handled by the useBlogs hook
+      if (blogToSave._imageFile) {
+        // The image will be uploaded by the useBlogs hook
+        blogToSave.image = blogToSave._imageFile as any;
+      }
+      
+      // Remove the _imageFile property before saving
+      delete blogToSave._imageFile;
+
       if (isNew) {
-        await addBlog(editing);
+        await addBlog(blogToSave);
         toast({ title: "Blog created successfully!" });
       } else {
-        await updateBlog(editing.id, editing);
+        await updateBlog(editing.id, blogToSave);
         toast({ title: "Blog updated successfully!" });
       }
+      
       setEditing(null);
       setIsNew(false);
     } catch (error) {
+      console.error('Save error:', error);
       toast({ 
         title: "Error", 
         description: error instanceof Error ? error.message : "Failed to save blog",
@@ -160,22 +226,54 @@ const AdminBlogs = () => {
             </div>
           </div>
 
-          {/* Image URL */}
+          {/* Image Upload */}
           <div>
-            <label className="font-medium">Image URL</label>
-            <input
-              value={editing.image}
-              onChange={(e) =>
-                setEditing({ ...editing, image: e.target.value })
-              }
-              placeholder="https://example.com/image.jpg"
-              className="w-full px-4 py-2 border rounded-lg"
-            />
+            <label className="font-medium">Blog Image</label>
+            <div className="mt-1 flex items-center">
+              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg border border-gray-300 transition-colors">
+                <span>Choose Image</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      try {
+                        await handleImageUpload(file);
+                      } catch (error) {
+                        console.error('Error handling image upload:', error);
+                        toast({
+                          title: 'Error',
+                          description: 'Failed to process image',
+                          variant: 'destructive',
+                        });
+                      }
+                    }
+                  }}
+                />
+              </label>
+              {editing.image && (
+                <button
+                  type="button"
+                  onClick={() => setEditing({ ...editing, image: '' })}
+                  className="ml-2 text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
             {editing.image && (
-              <img
-                src={editing.image}
-                className="w-40 h-28 object-cover mt-2 rounded"
-              />
+              <div className="mt-2">
+                <img
+                  src={editing.image}
+                  alt="Blog preview"
+                  className="max-h-48 rounded-lg border object-cover"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  {editing._imageFile ? 'New image selected' : 'Current image'}
+                </p>
+              </div>
             )}
           </div>
 

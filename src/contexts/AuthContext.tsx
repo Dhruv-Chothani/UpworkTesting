@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from '../lib/api';
+import { apiFetch, getApiUrl } from '../lib/api';
 
 type User = {
   email: string;
@@ -41,12 +41,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
-        const response = await apiFetch<MeResponse>('/api/auth/me');
-        console.log('Auth check response:', response);
-        if (response && response.admin) {
-          setUser(response.admin);
+        const meUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/me`;
+        console.log('Auth check URL:', meUrl);
+        
+        const response = await fetch(meUrl, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('mh_admin_token') || ''}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Not authenticated');
+        }
+
+        const data = await response.json();
+        console.log('Auth check response:', data);
+        
+        if (data && data.admin) {
+          setUser(data.admin);
         } else {
-          // Clear any invalid tokens
           localStorage.removeItem('mh_admin_token');
           setUser(null);
         }
@@ -67,9 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    console.log('Attempting login with:', { email });
     try {
-      const response = await fetch(apiFetch('/api/auth/login'), {
+      console.log('Attempting login with:', { email });
+      
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -79,41 +96,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log('Login response status:', response.status);
+      const data = await response.json();
       
       if (!response.ok) {
-        let errorMessage = 'Login failed';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-          console.error('Login error response:', errorData);
-        } catch (e) {
-          console.error('Failed to parse error response:', e);
-          errorMessage = response.status === 401 ? 'Invalid email or password' : 'Login failed';
-        }
-        throw new Error(errorMessage);
+        console.error('Login failed:', data);
+        throw new Error(data.message || 'Login failed');
       }
 
-      // Get the response data
-      const data = await response.json();
-      console.log('Login successful:', { hasToken: !!data.token });
+      console.log('Login successful, received data:', data);
       
-      // Store token if present (for backward compatibility)
       if (data.token) {
         localStorage.setItem('mh_admin_token', data.token);
       }
 
-      // Get user data using the cookie that was set
-      console.log('Fetching user data...');
-      const userData: MeResponse = await apiFetch('/api/auth/me');
-      console.log('User data response:', userData);
-      
-      if (!userData || !userData.admin) {
-        console.error('Invalid user data received:', userData);
-        throw new Error('Failed to fetch user data');
+      // Update user state with the received data
+      if (data.admin) {
+        setUser(data.admin);
+      } else {
+        // If no admin data in response, fetch it
+        const userData = await apiFetch<{admin: User}>('/api/auth/me');
+        setUser(userData.admin);
       }
       
-      setUser(userData.admin);
       console.log('Login successful, navigating to /admin');
       navigate('/admin');
     } catch (error) {
@@ -125,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       // Try to call the logout endpoint
-      await fetch(apiFetch('/api/auth/logout'), {
+      await fetch(getApiUrl('/api/auth/logout'), {
         method: 'POST',
         credentials: 'include',
         headers: {

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiFetch, getApiUrl } from '../lib/api';
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -36,16 +37,29 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await apiFetch<{ token: string }>('/api/auth/login', {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ email, password }),
       });
-      if (res?.token) {
-        localStorage.setItem(TOKEN_KEY, res.token);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || 'Login failed');
       }
+
+      const data = await response.json();
+      
+      if (data.token) {
+        localStorage.setItem(TOKEN_KEY, data.token);
+      }
+      
       setIsAdmin(true);
-      return { ok: true };
+      return { ok: true, data };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Invalid email or password';
       setIsAdmin(false);

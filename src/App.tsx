@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import AdminSlots from "./pages/admin/AdminSlots";
 import Login from "./pages/admin/Login";
+import Register from "./pages/admin/Register";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -52,6 +53,7 @@ const App = () => (
           
           {/* Public Auth Routes */}
           <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/register" element={<Register />} />
           
           {/* Admin Routes - Protected */}
           <Route

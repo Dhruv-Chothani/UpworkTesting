@@ -6,21 +6,44 @@ import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Blog } from "@/hooks/usePublicBlogs";
+import { apiFetch } from "@/lib/api";
 
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { blogs, loading: blogsLoading } = usePublicBlogs();
+  const { blogs, loading: blogsLoading, refetch } = usePublicBlogs();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    const found = blogs.find(b => b.slug === slug);
-    setBlog(found || null);
-    setLoading(false);
-  }, [blogs, slug]);
+    const fetchBlogPost = async () => {
+      if (!slug) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // First try to fetch the specific blog post from the backend
+        const data = await apiFetch<Blog>(`/api/blogs/${slug}`);
+        setBlog(data);
+      } catch (err) {
+        console.error('Error fetching blog post:', err);
+        setError('Failed to load the blog post');
+        
+        // Fallback to client-side search if API fails
+        const found = blogs.find(b => b.slug === slug);
+        if (found) {
+          setBlog(found);
+          setError(null);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPost();
+  }, [slug, blogs]);
   
   if (!blog) {
     return (
@@ -44,13 +67,42 @@ const BlogPost = () => {
     );
   }
 
-  if (loading || blogsLoading) {
+  if (loading || (blogsLoading && !blog)) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="pt-32 pb-24">
           <div className="container mx-auto px-4 text-center">
             <p className="text-muted-foreground">Loading article...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-32 pb-24">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-4">
+              Error Loading Article
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              {error}
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="mr-2"
+            >
+              Try Again
+            </Button>
+            <Link to="/blog">
+              <Button variant="hero">Back to Blog</Button>
+            </Link>
           </div>
         </main>
         <Footer />
@@ -80,7 +132,7 @@ const BlogPost = () => {
     );
   }
 
-  // Get related posts
+  // Get related posts (filtered from the already loaded blogs)
   const relatedPosts = blogs
     .filter(b => b.id !== blog.id && b.published && b.category === blog.category)
     .slice(0, 3);

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getApiUrl } from '@/lib/api';
 
 export interface Blog {
   id: string;
@@ -10,10 +10,12 @@ export interface Blog {
   content: string;
   image: string;
   author: string;
-  createdAt: string;
-  date?: string;
   category: string;
   published: boolean;
+  createdAt?: string;
+  date?: string;
+  // For file uploads during editing
+  _imageFile?: File;
 }
 
 const normalizeBlog = (blog: Partial<Blog>): Blog => ({
@@ -63,26 +65,85 @@ export const useBlogs = () => {
     loadBlogs();
   }, [loadBlogs]);
 
-  const addBlog = async (blog: Omit<Blog, 'id' | 'createdAt' | '_id'>) => {
-    const created = await apiFetch<Blog>('/api/blogs', {
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const response = await fetch(getApiUrl('/api/blogs/upload'), {
       method: 'POST',
       credentials: 'include',
-      body: JSON.stringify(blog),
+      body: formData,
     });
-    const normalized = normalizeBlog(created);
-    setBlogs([normalized, ...blogs]);
-    return normalized;
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || 'Failed to upload image');
+    }
+    
+    const { imageUrl } = await response.json();
+    return imageUrl;
+  };
+
+  const addBlog = async (blogData: Omit<Blog, 'id' | 'createdAt' | '_id'>) => {
+    try {
+      // If there's an image file, upload it first
+      let imageUrl = blogData.image;
+      if (blogData.image && typeof blogData.image !== 'string') {
+        imageUrl = await uploadImage(blogData.image as unknown as File);
+      }
+      
+      const blogToCreate = {
+        ...blogData,
+        image: imageUrl,
+      };
+      
+      const created = await apiFetch<Blog>('/api/blogs', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blogToCreate),
+      });
+      
+      const normalized = normalizeBlog(created);
+      setBlogs(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (error) {
+      console.error('Error adding blog:', error);
+      throw error;
+    }
   };
 
   const updateBlog = async (id: string, updates: Partial<Blog>) => {
-    const updated = await apiFetch<Blog>(`/api/blogs/${id}`, {
-      method: 'PUT',
-      credentials: 'include',
-      body: JSON.stringify(updates),
-    });
-    const normalized = normalizeBlog(updated);
-    setBlogs(blogs.map((b) => (b.id === id || b._id === id ? normalized : b)));
-    return normalized;
+    try {
+      // If there's a new image file, upload it first
+      let imageUrl = updates.image;
+      if (updates.image && typeof updates.image !== 'string') {
+        imageUrl = await uploadImage(updates.image as unknown as File);
+      }
+      
+      const blogToUpdate = {
+        ...updates,
+        ...(imageUrl ? { image: imageUrl } : {}),
+      };
+      
+      const updated = await apiFetch<Blog>(`/api/blogs/${id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blogToUpdate),
+      });
+      
+      const normalized = normalizeBlog(updated);
+      setBlogs(prev => prev.map(b => (b.id === id || b._id === id ? normalized : b)));
+      return normalized;
+    } catch (error) {
+      console.error('Error updating blog:', error);
+      throw error;
+    }
   };
 
   const deleteBlog = async (id: string) => {
