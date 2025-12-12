@@ -10,6 +10,8 @@ interface AdminContextType {
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
+const TOKEN_KEY = 'mh_admin_token';
+
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [checking, setChecking] = useState<boolean>(true);
@@ -24,6 +26,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsAdmin(!!res?.admin);
       } catch {
         setIsAdmin(false);
+        localStorage.removeItem(TOKEN_KEY);
       } finally {
         setChecking(false);
       }
@@ -33,11 +36,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const login = async (email: string, password: string) => {
     try {
-      await apiFetch('/api/auth/login', {
+      const res = await apiFetch<{ token: string }>('/api/auth/login', {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
+      if (res?.token) {
+        localStorage.setItem(TOKEN_KEY, res.token);
+      }
       setIsAdmin(true);
       return { ok: true };
     } catch (err) {
@@ -54,6 +60,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // ignore
     }
     setIsAdmin(false);
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   return (

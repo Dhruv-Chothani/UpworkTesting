@@ -19,16 +19,24 @@ const withBase = (path: string) => {
   return url;
 };
 
+const TOKEN_KEY = 'mh_admin_token';
+
 export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = withBase(path);
+
+  // Attach JWT if present (for protected routes)
+  const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+  const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+
   const res = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {}),
+      ...authHeader,
     },
     credentials: 'include',
   });
