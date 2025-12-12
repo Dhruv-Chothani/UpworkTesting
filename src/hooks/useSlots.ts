@@ -21,7 +21,8 @@ export interface Booking {
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
-export const useSlots = () => {
+export const useSlots = (options?: { admin?: boolean }) => {
+  const isAdmin = options?.admin ?? false;
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +51,7 @@ export const useSlots = () => {
   }, []);
 
   const loadBookings = useCallback(async () => {
+    if (!isAdmin) return; // only admins can fetch bookings (protected route)
     try {
       const data = await apiFetch<Booking[]>('/api/bookings', {
         credentials: 'include',

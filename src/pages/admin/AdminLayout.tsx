@@ -7,7 +7,7 @@ import { Lock, LogOut, Home, BookOpen, Calendar, Settings, Mail } from "lucide-r
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const AdminLayout = () => {
-  const { isAdmin, login, logout } = useAdmin();
+  const { isAdmin, checking, login, logout } = useAdmin();
   const [email, setEmail] = useState("admin@clinic.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,6 +23,16 @@ const AdminLayout = () => {
       setError(result.error || "Invalid email or password");
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card rounded-xl p-6 shadow-card text-center">
+          <p className="text-muted-foreground">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
@@ -63,9 +73,6 @@ const AdminLayout = () => {
             />
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
-            <p className="text-xs text-muted-foreground">
-              Email: admin@clinic.com · Password: Clinic@123
-            </p>
             <Button type="submit" variant="hero" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Login"}
             </Button>

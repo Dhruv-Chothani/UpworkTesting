@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
 
 const AdminSlots = () => {
-  const { slots, bookings, addSlot, deleteSlot, toggleSlotActive, updateBookingStatus } = useSlots();
+  const { slots, bookings, addSlot, deleteSlot, toggleSlotActive, updateBookingStatus } = useSlots({ admin: true });
   const { toast } = useToast();
   const [newTime, setNewTime] = useState("");
   const [newLabel, setNewLabel] = useState("");

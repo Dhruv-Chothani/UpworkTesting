@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
-// Static, frontend-only admin credentials (requested)
-const ADMIN_EMAIL = 'admin@clinic.com';
-const ADMIN_PASSWORD = 'Clinic@123';
-const STORAGE_KEY = 'mh_admin_logged_in';
+import { apiFetch } from '@/lib/api';
 
 interface AdminContextType {
   isAdmin: boolean;
+  checking: boolean;
   login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
@@ -14,42 +11,53 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(STORAGE_KEY) === 'true';
-  });
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [checking, setChecking] = useState<boolean>(true);
 
-  // Sync across tabs/windows
+  // On mount, ask backend if session exists
   useEffect(() => {
-    const handleStorage = () => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      setIsAdmin(stored === 'true');
+    const checkSession = async () => {
+      try {
+        const res = await apiFetch<{ admin: { email: string } | null }>('/api/auth/me', {
+          credentials: 'include',
+        });
+        setIsAdmin(!!res?.admin);
+      } catch {
+        setIsAdmin(false);
+      } finally {
+        setChecking(false);
+      }
     };
-    handleStorage();
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    checkSession();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const isValidEmail = email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
-    const isValidPassword = password === ADMIN_PASSWORD;
-    if (isValidEmail && isValidPassword) {
+    try {
+      await apiFetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
       setIsAdmin(true);
-      localStorage.setItem(STORAGE_KEY, 'true');
       return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid email or password';
+      setIsAdmin(false);
+      return { ok: false, error: message };
     }
-    setIsAdmin(false);
-    localStorage.removeItem(STORAGE_KEY);
-    return { ok: false, error: 'Invalid email or password' };
   };
 
   const logout = async () => {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      // ignore
+    }
     setIsAdmin(false);
   };
 
   return (
-    <AdminContext.Provider value={{ isAdmin, login, logout }}>
+    <AdminContext.Provider value={{ isAdmin, checking, login, logout }}>
       {children}
     </AdminContext.Provider>
   );
