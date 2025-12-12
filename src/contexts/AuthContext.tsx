@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
-        const meUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/me`;
+        const meUrl = `${import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app'}/api/auth/me`;
         console.log('Auth check URL:', meUrl);
         
         const response = await fetch(meUrl, {

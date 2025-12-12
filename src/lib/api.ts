@@ -1,16 +1,10 @@
 // API Configuration
-const isDevelopment = import.meta.env.DEV;
-const API_BASE = (() => {
-  const base = isDevelopment 
-    ? 'http://localhost:5000' 
-    : 'https://upwork-testing-backend.vercel.app';
-  return String(base).trim().replace(/\/+$/, '');
-})();
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app').replace(/\/+$/, '');
 
 console.log('API Configuration:', {
   env: import.meta.env.MODE,
   apiBase: API_BASE,
-  isDevelopment
+  nodeEnv: import.meta.env.NODE_ENV
 });
 
 // Build URL without double slashes
