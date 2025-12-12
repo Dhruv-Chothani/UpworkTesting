@@ -41,10 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
-        const response: MeResponse = await apiFetch('/api/auth/me');
+        const response = await apiFetch<MeResponse>('/api/auth/me');
         console.log('Auth check response:', response);
         if (response && response.admin) {
           setUser(response.admin);
+        } else {
+          // Clear any invalid tokens
+          localStorage.removeItem('mh_admin_token');
+          setUser(null);
         }
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -67,7 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch(apiFetch('/api/auth/login'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
@@ -77,22 +84,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         let errorMessage = 'Login failed';
         try {
-          const errorData: { message?: string } = await response.json();
+          const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
           console.error('Login error response:', errorData);
         } catch (e) {
           console.error('Failed to parse error response:', e);
-          errorMessage = response.statusText || errorMessage;
+          errorMessage = response.status === 401 ? 'Invalid email or password' : 'Login failed';
         }
-        const error: ApiError = new Error(errorMessage);
-        error.status = response.status;
-        throw error;
+        throw new Error(errorMessage);
       }
 
-      // The token is in the response body (for backward compatibility)
-      const data: AuthResponse = await response.json();
-      console.log('Login successful, token received:', !!data.token);
+      // Get the response data
+      const data = await response.json();
+      console.log('Login successful:', { hasToken: !!data.token });
       
+      // Store token if present (for backward compatibility)
       if (data.token) {
         localStorage.setItem('mh_admin_token', data.token);
       }
@@ -118,10 +124,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await apiFetch('/api/auth/logout', { method: 'POST' });
+      // Try to call the logout endpoint
+      await fetch(apiFetch('/api/auth/logout'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Logout API error (proceeding anyway):', error);
     } finally {
+      // Always clear local state and redirect
       localStorage.removeItem('mh_admin_token');
       setUser(null);
       navigate('/admin/login');

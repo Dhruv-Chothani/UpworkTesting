@@ -1,27 +1,18 @@
-// Default to backend URL; can be overridden via VITE_API_URL
-let API_BASE = import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app';
+// Production backend URL
+const PROD_API_BASE = 'https://upwork-testing-backend.vercel.app';
 
-// Normalize API_BASE: remove ALL trailing slashes and whitespace
+// Get API base URL from environment or use production
+let API_BASE = import.meta.env.VITE_API_URL || PROD_API_BASE;
+
+// Normalize API_BASE
 API_BASE = String(API_BASE).trim().replace(/\/+$/, '');
-
-// Log the API base URL in development
-if (import.meta.env.DEV) {
-  console.log('API Base URL:', API_BASE);
-}
 
 // Build URL without double slashes
 const withBase = (path: string) => {
   // Remove leading slashes from path
   const cleanPath = String(path).replace(/^\/+/, '');
   // Combine: base (no trailing slash) + single slash + path (no leading slash)
-  const url = `${API_BASE}/${cleanPath}`;
-  
-  // Debug in development
-  if (import.meta.env.DEV) {
-    console.log(`[API] ${path} → ${url}`);
-  }
-  
-  return url;
+  return `${API_BASE}/${cleanPath}`;
 };
 
 const TOKEN_KEY = 'mh_admin_token';
@@ -31,33 +22,45 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = withBase(path);
-
-  // Attach JWT if present (for protected routes)
   const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
-  const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  });
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
   const fetchOptions: RequestInit = {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-      ...authHeader,
-    },
+    headers,
     credentials: 'include',
     mode: 'cors',
   };
 
-  if (import.meta.env.DEV) {
-    console.log(`[API] ${options.method || 'GET'} ${path} → ${url}`, { options: fetchOptions });
-  }
+  try {
+    const res = await fetch(url, fetchOptions);
 
-  const res = await fetch(url, fetchOptions);
+    // Handle empty responses (like 204 No Content)
+    if (res.status === 204) {
+      return null as unknown as T;
+    }
 
-  if (!res.ok) {
-    const message = await res.text();
-    throw new Error(message || res.statusText);
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const error = new Error(data.message || 'Request failed');
+      Object.assign(error, { status: res.status, data });
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`API Error [${options.method || 'GET'} ${path}]:`, error);
+    throw error;
   }
-  return res.json();
 }
 
 export const Api = {
