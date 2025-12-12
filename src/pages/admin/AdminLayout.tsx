@@ -63,6 +63,9 @@ const AdminLayout = () => {
             />
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
+            <p className="text-xs text-muted-foreground">
+              Email: admin@clinic.com · Password: Clinic@123
+            </p>
             <Button type="submit" variant="hero" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Login"}
             </Button>
