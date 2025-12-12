@@ -92,12 +92,14 @@ const Doctors = () => {
                   <div className={index % 2 === 1 ? "lg:order-2" : ""}>
                     <div className="relative">
                       <img
-                        src={doctor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=400&background=random`}
+                        src={doctor.image}
                         alt={doctor.name}
                         className="rounded-2xl shadow-elevated w-full max-w-md mx-auto object-cover h-96"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=400&background=random`;
+                          // Use avatar API as fallback
+                          target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=400&background=6366f1&color=fff&bold=true`;
+                          target.onerror = null; // Prevent infinite loop
                         }}
                       />
                       <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground rounded-xl px-4 md:px-6 py-2 md:py-3 shadow-lg">

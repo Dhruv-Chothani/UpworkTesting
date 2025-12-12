@@ -51,14 +51,16 @@ const DoctorsSection = () => {
               className="group bg-card rounded-2xl p-8 shadow-card hover:shadow-elevated transition-all duration-500 hover:-translate-y-2"
             >
               {/* Doctor Image */}
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-6 overflow-hidden border-4 border-primary/20 shadow-lg">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-6 overflow-hidden border-4 border-primary/20 shadow-lg bg-primary/10">
                 <img
-                  src={doctor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=160&background=random`}
+                  src={doctor.image}
                   alt={doctor.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=160&background=random`;
+                    // Use avatar API as fallback
+                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=160&background=6366f1&color=fff&bold=true`;
+                    target.onerror = null; // Prevent infinite loop
                   }}
                 />
               </div>

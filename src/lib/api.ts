@@ -1,7 +1,12 @@
 // Default to backend on 5000; can be overridden via VITE_API_URL
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const withBase = (path: string) => `${API_BASE}${path}`;
+// Remove trailing slash from API_BASE and ensure path starts with /
+const withBase = (path: string) => {
+  const base = API_BASE.replace(/\/+$/, ''); // Remove trailing slashes
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${cleanPath}`;
+};
 
 export async function apiFetch<T>(
   path: string,
