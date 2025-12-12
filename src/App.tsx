@@ -19,6 +19,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import AdminSlots from "./pages/admin/AdminSlots";
+import Login from "./pages/admin/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -48,6 +49,9 @@ const App = () => (
           <Route path="/book" element={<Book />} />
           <Route path="/myths-and-facts" element={<MythsAndFacts />} />
           <Route path="/payment" element={<Payment />} />
+          
+          {/* Public Auth Routes */}
+          <Route path="/admin/login" element={<Login />} />
           
           {/* Admin Routes - Protected */}
           <Route
