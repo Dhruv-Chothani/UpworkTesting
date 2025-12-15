@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch, getApiUrl } from '../lib/api';
+import { apiFetch } from '../lib/api';
 
 type User = {
   email: string;
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
-        const meUrl = `${import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app'}/api/auth/me`;
+        const meUrl = `${import.meta.env.VITE_API_URL || 'https://upworktestingbackend.onrender.com'}/api/auth/me`;
         console.log('Auth check URL:', meUrl);
         
         const response = await fetch(meUrl, {
@@ -86,40 +86,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Attempting login with:', { email });
       
-      const response = await fetch(getApiUrl('/api/auth/login'), {
+      // Use apiFetch directly for the login request
+      const data = await apiFetch<AuthResponse>('/api/auth/login', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
-      const data = await response.json();
+      console.log('Login successful:', { hasToken: !!data?.token });
       
-      if (!response.ok) {
-        console.error('Login failed:', data);
-        throw new Error(data.message || 'Login failed');
-      }
-
-      console.log('Login successful, received data:', data);
-      
-      if (data.token) {
+      // Store token if present (for backward compatibility)
+      if (data?.token) {
         localStorage.setItem('mh_admin_token', data.token);
       }
 
-      // Update user state with the received data
-      if (data.admin) {
-        setUser(data.admin);
-      } else {
-        // If no admin data in response, fetch it
-        const userData = await apiFetch<{admin: User}>('/api/auth/me');
-        setUser(userData.admin);
-      }
+      // Get user data using the cookie that was set
+      console.log('Fetching user data...');
+      const userData = await apiFetch<MeResponse>('/api/auth/me');
+      console.log('User data:', userData);
       
-      console.log('Login successful, navigating to /admin');
-      navigate('/admin');
+      if (userData?.admin) {
+        setUser(userData.admin);
+        console.log('Login successful, navigating to /admin');
+        navigate('/admin');
+      } else {
+        throw new Error('Invalid user data received');
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -128,13 +119,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      // Try to call the logout endpoint
-      await fetch(getApiUrl('/api/auth/logout'), {
+      // Call the logout endpoint using apiFetch
+      await apiFetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
     } catch (error) {
       console.error('Logout API error (proceeding anyway):', error);

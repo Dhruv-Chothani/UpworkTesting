@@ -19,8 +19,8 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import AdminSlots from "./pages/admin/AdminSlots";
+import HomePageEditor from "./pages/admin/HomePageEditor";
 import Login from "./pages/admin/Login";
-import Register from "./pages/admin/Register";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -51,9 +51,8 @@ const App = () => (
           <Route path="/myths-and-facts" element={<MythsAndFacts />} />
           <Route path="/payment" element={<Payment />} />
           
-          {/* Public Auth Routes */}
+          {/* Public Auth Route */}
           <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin/register" element={<Register />} />
           
           {/* Admin Routes - Protected */}
           <Route
@@ -65,6 +64,7 @@ const App = () => (
             }
           >
             <Route index element={<AdminDashboard />} />
+            <Route path="homepage" element={<HomePageEditor />} />
             <Route path="blogs" element={<AdminBlogs />} />
             <Route path="slots" element={<AdminSlots />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />

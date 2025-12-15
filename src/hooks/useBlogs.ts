@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { apiFetch, getApiUrl } from '@/lib/api';
+import { apiFetch } from '@/lib/api';
 
 export interface Blog {
   id: string;
@@ -49,9 +49,14 @@ export const useBlogs = () => {
     try {
       setLoading(true);
       setError(null);
-      const endpoint = adminView ? '/api/blogs/all' : '/api/blogs';
-      const data = await apiFetch<Blog[]>(endpoint, { credentials: 'include' });
-      setBlogs(data.map(normalizeBlog));
+      const data = await apiFetch<Blog[]>(`/api/blogs${adminView ? '/admin' : ''}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      setBlogs(Array.isArray(data) ? data.map(normalizeBlog) : []);
     } catch (err) {
       console.error('Failed to fetch blogs:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
@@ -69,18 +74,16 @@ export const useBlogs = () => {
     const formData = new FormData();
     formData.append('image', file);
     
-    const response = await fetch(getApiUrl('/api/blogs/upload'), {
+    const { imageUrl } = await apiFetch<{ imageUrl: string }>('/api/blogs/upload', {
       method: 'POST',
       credentials: 'include',
       body: formData,
     });
     
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || 'Failed to upload image');
+    if (!imageUrl) {
+      throw new Error('Failed to upload image');
     }
     
-    const { imageUrl } = await response.json();
     return imageUrl;
   };
 

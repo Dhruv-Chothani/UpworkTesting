@@ -1,10 +1,17 @@
 // API Configuration
-const API_BASE = (import.meta.env.VITE_API_URL || 'https://upwork-testing-backend.vercel.app').replace(/\/+$/, '');
+const isDevelopment = import.meta.env.DEV;
+const API_BASE = (() => {
+  const base = isDevelopment 
+
+    ? 'https://upworktestingbackend.onrender.com'
+    : 'https://upworktestingbackend.onrender.com';
+  return String(base).trim().replace(/\/+$/, '');
+})();
 
 console.log('API Configuration:', {
   env: import.meta.env.MODE,
   apiBase: API_BASE,
-  nodeEnv: import.meta.env.NODE_ENV
+  isDevelopment
 });
 
 // Build URL without double slashes
@@ -17,7 +24,7 @@ const withBase = (path: string): string => {
 
 const TOKEN_KEY = 'mh_admin_token';
 
-export async function apiFetch<T = any>(
+export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
@@ -33,11 +40,9 @@ export async function apiFetch<T = any>(
   }
   
   // Add auth token if available
-  if (typeof localStorage !== 'undefined') {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token && !headers.has('Authorization')) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
   }
   
   const fetchOptions: RequestInit = {
@@ -79,16 +84,11 @@ export async function apiFetch<T = any>(
     }
     
     // Parse and return JSON response
-    return await response.json() as T;
+    return await response.json();
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
   }
-}
-
-// Helper function to get the URL without making a request
-export function getApiUrl(path: string): string {
-  return withBase(path);
 }
 
 export const Api = {

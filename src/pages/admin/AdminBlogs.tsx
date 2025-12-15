@@ -9,7 +9,7 @@ const AdminBlogs = () => {
   const { blogs, addBlog, updateBlog, deleteBlog, loading } = useBlogs();
   const { toast } = useToast();
 
-  const [editing, setEditing] = useState<Partial<Blog> | null>(null);
+  const [editing, setEditing] = useState<Partial<Blog> & { _imageFile?: File; _imageSource?: 'url' | 'upload' } | null>(null);
   const [isNew, setIsNew] = useState(false);
 
   const handleNewBlog = () => {
@@ -25,11 +25,12 @@ const AdminBlogs = () => {
       published: false,
       date: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString(),
+      _imageSource: 'upload', // Default to upload tab
     });
     setIsNew(true);
   };
 
-  const emptyBlog: Blog = {
+  const emptyBlog: Blog & { _imageFile?: File; _imageSource?: 'url' | 'upload' } = {
     id: "",
     title: "",
     slug: "",
@@ -41,6 +42,7 @@ const AdminBlogs = () => {
     published: false,
     date: new Date().toISOString().split("T")[0],
     createdAt: new Date().toISOString(),
+    _imageSource: 'upload',
   };
 
   const handleImageUpload = async (file: File) => {
@@ -229,50 +231,105 @@ const AdminBlogs = () => {
           {/* Image Upload */}
           <div>
             <label className="font-medium">Blog Image</label>
-            <div className="mt-1 flex items-center">
-              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg border border-gray-300 transition-colors">
-                <span>Choose Image</span>
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      try {
-                        await handleImageUpload(file);
-                      } catch (error) {
-                        console.error('Error handling image upload:', error);
-                        toast({
-                          title: 'Error',
-                          description: 'Failed to process image',
-                          variant: 'destructive',
-                        });
-                      }
-                    }
-                  }}
-                />
-              </label>
-              {editing.image && (
-                <button
-                  type="button"
-                  onClick={() => setEditing({ ...editing, image: '' })}
-                  className="ml-2 text-red-600 hover:text-red-800 text-sm"
-                >
-                  Remove
-                </button>
-              )}
+            
+            {/* Toggle between URL and Upload */}
+            <div className="flex gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setEditing({ ...editing, _imageSource: 'url' })}
+                className={`px-3 py-1 text-sm rounded ${editing._imageSource === 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+              >
+                Image URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing({ ...editing, _imageSource: 'upload' })}
+                className={`px-3 py-1 text-sm rounded ${editing._imageSource !== 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+              >
+                Upload Image
+              </button>
             </div>
-            {editing.image && (
-              <div className="mt-2">
-                <img
-                  src={editing.image}
-                  alt="Blog preview"
-                  className="max-h-48 rounded-lg border object-cover"
+
+            {/* URL Input */}
+            {editing._imageSource === 'url' ? (
+              <div className="space-y-2">
+                <input
+                  type="url"
+                  value={editing.image || ''}
+                  onChange={(e) => {
+                    setEditing({
+                      ...editing,
+                      image: e.target.value,
+                      _imageFile: undefined // Clear any uploaded file when using URL
+                    });
+                  }}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-4 py-2 border rounded-lg"
                 />
-                <p className="mt-1 text-xs text-gray-500">
-                  {editing._imageFile ? 'New image selected' : 'Current image'}
-                </p>
+                {editing.image && !editing.image.startsWith('blob:') && !editing.image.startsWith('data:') && (
+                  <div className="mt-2">
+                    <img
+                      src={editing.image}
+                      alt="URL preview"
+                      className="max-h-48 rounded-lg border object-cover"
+                      onError={(e) => {
+                        // Handle broken image URLs
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* File Upload */
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg border border-gray-300 transition-colors">
+                    <span>Choose Image</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            await handleImageUpload(file);
+                          } catch (error) {
+                            console.error('Error handling image upload:', error);
+                            toast({
+                              title: 'Error',
+                              description: 'Failed to process image',
+                              variant: 'destructive',
+                            });
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                  {editing.image && (
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, image: '', _imageFile: undefined })}
+                      className="ml-2 text-red-600 hover:text-red-800 text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {editing.image && (editing.image.startsWith('blob:') || editing.image.startsWith('data:')) && (
+                  <div className="mt-2">
+                    <img
+                      src={editing.image}
+                      alt="Upload preview"
+                      className="max-h-48 rounded-lg border object-cover"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      {editing._imageFile ? 'New image selected' : 'Current image'}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

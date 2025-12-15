@@ -114,6 +114,7 @@ const AdminLayout = () => {
 
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: Settings },
+    { href: "/admin/homepage", label: "Home Page", icon: Home },
     { href: "/admin/blogs", label: "Blogs", icon: BookOpen },
     { href: "/admin/slots", label: "Appointment Slots", icon: Calendar },
   ];
