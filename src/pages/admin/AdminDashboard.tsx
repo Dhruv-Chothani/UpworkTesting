@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const AdminDashboard = () => {
-  const { bookings, slots, deleteBooking } = useSlots({ admin: true });
+  const { bookings, slots } = useSlots({ admin: true });
   const { blogs } = useBlogs();
 
   // Sort bookings by createdAt (newest first) and filter for today only
@@ -24,17 +24,6 @@ const AdminDashboard = () => {
     { label: "Published Blogs", value: blogs.filter(b => b.published).length, icon: BookOpen, color: "bg-purple-500" },
     { label: "Pending", value: bookings.filter(b => b.status === 'pending').length, icon: TrendingUp, color: "bg-orange-500" },
   ];
-
-  const handleDeleteBooking = async (bookingId: string) => {
-    if (window.confirm('Are you sure you want to delete this booking?')) {
-      try {
-        await deleteBooking(bookingId);
-      } catch (error) {
-        console.error('Failed to delete booking:', error);
-        alert('Failed to delete booking. Please try again.');
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
