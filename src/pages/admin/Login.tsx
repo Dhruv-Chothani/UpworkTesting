@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { Shield, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -27,79 +31,105 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Admin Login
-          </h2>
-        </div>
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative bg-card/80 backdrop-blur-xl rounded-2xl p-8 sm:p-10 shadow-2xl max-w-md w-full border border-primary/10">
+        {/* Header with icon */}
+        <div className="text-center mb-8">
+          <div className="relative inline-block mb-6">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto shadow-lg">
+              <Shield className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-card"></div>
           </div>
-        )}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" value="true" />
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Admin Portal
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Secure access to your dashboard
+          </p>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Mail className="w-4 h-4 text-primary" /> Email Address
+            </Label>
+            <div className="relative">
+              <Input
                 type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
+                placeholder="admin@example.com"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className="pl-4 pr-4 py-3 text-base border-2 focus:border-primary transition-all"
               />
             </div>
           </div>
 
-          <div className="space-y-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-            
-            <div className="text-center text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
-              <a 
-                href="/admin/register" 
-                className="font-medium text-blue-600 hover:text-blue-500"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/admin/register');
-                }}
-              >
-                Register
-              </a>
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Lock className="w-4 h-4 text-primary" /> Password
+            </Label>
+            <div className="relative">
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                className="pl-4 pr-4 py-3 text-base border-2 focus:border-primary transition-all"
+              />
             </div>
           </div>
+
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-start gap-2">
+              <Lock className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+              <p className="text-destructive text-sm">{error}</p>
+            </div>
+          )}
+
+          <Button 
+            type="submit" 
+            variant="default" 
+            className="w-full py-6 text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all" 
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Signing in...
+              </span>
+            ) : (
+              "Sign In to Dashboard"
+            )}
+          </Button>
         </form>
+
+        {/* Go to Home Button */}
+        <div className="mt-6 pt-6 border-t border-border">
+          <Link to="/">
+            <Button 
+              variant="outline" 
+              className="w-full py-3 text-sm font-medium hover:bg-primary/5 transition-all group"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Go to Home
+            </Button>
+          </Link>
+        </div>
+
+        {/* Footer text */}
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          Protected by secure authentication
+        </p>
       </div>
     </div>
   );

@@ -26,20 +26,14 @@ const ContactSection = () => {
       icon: MapPin,
       title: "Visit Us",
       content: "Manu Homeopathy Clinic & Research Center",
-      link: "https://maps.google.com/?q=Manu+Homeopathy+Clinic+Research+Center",
+      link: "https://maps.app.goo.gl/AqMVTiSSzFPeMcve6",
       linkText: "Get Directions"
     },
     {
       icon: Phone,
       title: "Call Us",
       content: "+91 98765 43210",
-      link: "tel:+919876543210"
-    },
-    {
-      icon: Mail,
-      title: "Email Us",
-      content: "contact@manuhomeopathy.com",
-      link: "mailto:contact@manuhomeopathy.com"
+      link: "tel:+919108915074"
     },
     {
       icon: Clock,

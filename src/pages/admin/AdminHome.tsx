@@ -49,9 +49,9 @@ const AdminHome = () => {
   if (loading) {
     return (
       <div>
-        <h1 className="font-heading text-3xl font-bold text-foreground mb-8">Edit Home Page</h1>
-        <div className="bg-card rounded-xl p-6 shadow-card">
-          <p className="text-muted-foreground">Loading...</p>
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Edit Home Page</h1>
+        <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card">
+          <p className="text-muted-foreground text-sm sm:text-base">Loading...</p>
         </div>
       </div>
     );
@@ -59,78 +59,78 @@ const AdminHome = () => {
 
   return (
     <div>
-      <h1 className="font-heading text-3xl font-bold text-foreground mb-8">Edit Home Page</h1>
-      <div className="bg-card rounded-xl p-6 shadow-card space-y-6 max-w-2xl">
+      <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Edit Home Page</h1>
+      <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card space-y-4 sm:space-y-6 max-w-2xl">
         <div>
-          <label className="block text-sm font-medium mb-2">Hero Badge Text</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">Hero Badge Text</label>
           <input
             value={form.heroBadgeText}
             onChange={(e) => setForm({ ...form, heroBadgeText: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">Hero Title</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">Hero Title</label>
           <input
             value={form.heroTitle}
             onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">Hero Subtitle</label>
           <textarea
             value={form.heroSubtitle}
             onChange={(e) => setForm({ ...form, heroSubtitle: e.target.value })}
             rows={3}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">Hero Image URL</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">Hero Image URL</label>
           <input
             value={form.heroImage}
             onChange={(e) => setForm({ ...form, heroImage: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
             placeholder="Leave empty for default"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">About Title</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">About Title</label>
           <input
             value={form.aboutTitle}
             onChange={(e) => setForm({ ...form, aboutTitle: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">About Description</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">About Description</label>
           <textarea
             value={form.aboutDescription}
             onChange={(e) => setForm({ ...form, aboutDescription: e.target.value })}
             rows={4}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">About Image URL</label>
+          <label className="block text-xs sm:text-sm font-medium mb-2">About Image URL</label>
           <input
             value={form.aboutImage}
             onChange={(e) => setForm({ ...form, aboutImage: e.target.value })}
-            className="w-full px-4 py-2 border rounded-lg"
+            className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
             placeholder="Leave empty for default"
           />
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium">Stats</label>
-            <Button size="sm" variant="outline" onClick={handleAddStat}>
+            <label className="block text-xs sm:text-sm font-medium">Stats</label>
+            <Button size="sm" variant="outline" onClick={handleAddStat} className="text-xs sm:text-sm">
               Add Stat
             </Button>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {form.stats.map((stat, index) => (
-              <div key={index} className="grid grid-cols-2 gap-4">
+              <div key={index} className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div>
                   <label className="block text-xs text-muted-foreground mb-1">Value</label>
                   <input
@@ -140,7 +140,7 @@ const AdminHome = () => {
                       next[index] = { ...stat, value: e.target.value };
                       setForm({ ...form, stats: next });
                     }}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                     placeholder="28+"
                   />
                 </div>
@@ -153,7 +153,7 @@ const AdminHome = () => {
                       next[index] = { ...stat, label: e.target.value };
                       setForm({ ...form, stats: next });
                     }}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                     placeholder="Years Experience"
                   />
                 </div>
@@ -164,11 +164,11 @@ const AdminHome = () => {
         <Separator className="my-6" />
         
         {/* About Us Section */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold">About Us Section</h2>
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-lg sm:text-xl font-semibold">About Us Section</h2>
           
           <div>
-            <label className="block text-sm font-medium mb-2">Established Text</label>
+            <label className="block text-xs sm:text-sm font-medium mb-2">Established Text</label>
             <input
               value={form.aboutUs?.establishedYear || ""}
               onChange={(e) => setForm({ 
@@ -178,13 +178,13 @@ const AdminHome = () => {
                   establishedYear: e.target.value 
                 } 
               })}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
               placeholder="Established 1998 • 28 Years of Healing"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-2">Tagline</label>
+            <label className="block text-xs sm:text-sm font-medium mb-2">Tagline</label>
             <input
               value={form.aboutUs?.tagline || ""}
               onChange={(e) => setForm({ 
@@ -194,13 +194,13 @@ const AdminHome = () => {
                   tagline: e.target.value 
                 } 
               })}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
               placeholder="Classical Homeopathy for Mind & Body"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-xs sm:text-sm font-medium mb-2">Description</label>
             <textarea
               value={form.aboutUs?.description || ""}
               onChange={(e) => setForm({ 
@@ -211,21 +211,21 @@ const AdminHome = () => {
                 } 
               })}
               rows={4}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
               placeholder="One of Karnataka's premier homeopathic clinics..."
             />
           </div>
           
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium">About Us Stats</label>
-              <Button size="sm" variant="outline" onClick={handleAddAboutUsStat}>
+              <label className="block text-xs sm:text-sm font-medium">About Us Stats</label>
+              <Button size="sm" variant="outline" onClick={handleAddAboutUsStat} className="text-xs sm:text-sm">
                 Add Stat
               </Button>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {form.aboutUs?.stats?.map((stat, index) => (
-                <div key={index} className="grid grid-cols-2 gap-4">
+                <div key={index} className="grid grid-cols-2 gap-2 sm:gap-4">
                   <div>
                     <label className="block text-xs text-muted-foreground mb-1">Value</label>
                     <input
@@ -241,7 +241,7 @@ const AdminHome = () => {
                           } 
                         });
                       }}
-                      className="w-full px-4 py-2 border rounded-lg"
+                      className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                       placeholder="28+"
                     />
                   </div>
@@ -260,7 +260,7 @@ const AdminHome = () => {
                           } 
                         });
                       }}
-                      className="w-full px-4 py-2 border rounded-lg"
+                      className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                       placeholder="Years Experience"
                     />
                   </div>
@@ -270,11 +270,11 @@ const AdminHome = () => {
           </div>
         </div>
         
-        <div className="flex gap-3 pt-6">
-          <Button variant="hero" onClick={handleSave} className="flex-1">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-6">
+          <Button variant="hero" onClick={handleSave} className="flex-1 text-sm sm:text-base">
             Save Changes
           </Button>
-          <Button variant="outline" onClick={handleReset}>
+          <Button variant="outline" onClick={handleReset} className="text-sm sm:text-base">
             Reset
           </Button>
         </div>

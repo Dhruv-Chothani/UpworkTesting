@@ -246,7 +246,7 @@ curl -X POST http://localhost:3000/api/appointments \
   -d '{
     "name": "John Doe",
     "email": "john@example.com",
-    "phone": "+919876543210",
+    "phone": "+919108915074",
     "message": "Consultation for chronic allergies",
     "preferredDate": "2024-01-15"
   }'
@@ -307,7 +307,7 @@ Import the following JSON into Postman:
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+919876543210\",\n  \"message\": \"Consultation for chronic allergies\"\n}"
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+919108915074\",\n  \"message\": \"Consultation for chronic allergies\"\n}"
         }
       }
     },

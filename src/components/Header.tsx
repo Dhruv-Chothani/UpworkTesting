@@ -24,19 +24,17 @@ const Header = () => {
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground py-2">
         <div className="container mx-auto px-4 flex flex-wrap justify-between items-center text-sm gap-2">
-          <div className="flex items-center gap-6 flex-wrap">
-            <a href="tel:+919876543210" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
+            <a href="tel:+919108915074" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone className="w-4 h-4" />
-              <span>+91 98765 43210</span>
-            </a>
-            <a href="mailto:contact@manuhomeopathy.com" className="hidden sm:flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <Mail className="w-4 h-4" />
-              <span>contact@manuhomeopathy.com</span>
+              <span className="hidden xs:inline">+91 98765 43210</span>
+              <span className="xs:hidden">+91 98765 43210</span>
             </a>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+            <span className="hidden sm:inline">Mon - Sat: 10:00 AM - 7:00 PM</span>
+            <span className="sm:hidden">10AM-7PM</span>
           </div>
         </div>
       </div>
@@ -44,18 +42,18 @@ const Header = () => {
       {/* Main nav */}
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-heading text-xl font-bold">M</span>
+          <Link to="/" className="flex items-center gap-2 sm:gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-heading text-lg sm:text-xl font-bold">M</span>
             </div>
-            <div>
-              <h1 className="font-heading text-xl font-bold text-foreground leading-tight">Manu Homeopathy</h1>
+            <div className="hidden xs:block">
+              <h1 className="font-heading text-lg sm:text-xl font-bold text-foreground leading-tight">Manu Homeopathy</h1>
               <p className="text-xs text-muted-foreground">Clinic & Research Center</p>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -71,10 +69,11 @@ const Header = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/book">
-              <Button variant="hero" size="lg" className="hidden sm:flex">
-                Book Appointment
+              <Button variant="hero" size="sm" className="hidden xs:flex">
+                <span className="hidden sm:inline">Book Appointment</span>
+                <span className="sm:hidden">Book</span>
               </Button>
             </Link>
             

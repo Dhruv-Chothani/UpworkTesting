@@ -78,7 +78,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+919876543210\",\n  \"message\": \"Consultation for chronic allergies\",\n  \"preferredDate\": \"2024-01-15\",\n  \"doctor\": \"Dr. Manohara MC\"\n}"
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+919108915074\",\n  \"message\": \"Consultation for chronic allergies\",\n  \"preferredDate\": \"2024-01-15\",\n  \"doctor\": \"Dr. Manohara MC\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/appointments",
@@ -207,7 +207,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"phone\": \"+919876543210\",\n  \"subject\": \"General Inquiry\",\n  \"message\": \"I would like to know more about your services.\"\n}"
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"phone\": \"+919108915074\",\n  \"subject\": \"General Inquiry\",\n  \"message\": \"I would like to know more about your services.\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/contact",

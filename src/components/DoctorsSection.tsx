@@ -1,84 +1,102 @@
 import { GraduationCap, Award, Users } from "lucide-react";
+import manohara from "@/pages/doctors/dr-manohara.jpg";
+import deepa from "@/pages/doctors/Dr. Deepa Joshi .jpg";
+import umme from "@/pages/doctors/Dr. Umme Hafeefa.jpg";
 
 const doctors = [
   {
-    name: "Dr. M. C Manohara",
+    name: "Dr. Manohara MC",
     role: "Founder & Senior Consultant",
-    description: "With over 28 years of experience in classical homeopathy, Dr. Manohara has dedicated his life to healing through natural medicine.",
+    description:
+      "With over 28 years of experience in classical homeopathy, Dr. Manohara has dedicated his life to healing through natural medicine.",
     specialties: ["Constitutional Treatment", "Chronic Diseases", "Research"],
-    image: "https://ui-avatars.com/api/?name=Dr.+M.+C+Manohara&size=400&background=6366f1&color=fff&bold=true",
+    image: manohara,
   },
   {
-    name: "Dr. Snehal Bobde",
+    name: "Dr. Deepa Joshi",
     role: "Consultant Homeopath",
-    description: "Specializing in women's health and pediatric care, Dr. Snehal brings compassionate expertise to every consultation.",
+    description:
+      "Specializing in women's health and pediatric care, Dr. Deepa brings compassionate expertise to every consultation.",
     specialties: ["Women's Health", "Pediatrics", "Skin Disorders"],
-    image: "https://ui-avatars.com/api/?name=Dr.+Snehal+Bobde&size=400&background=6366f1&color=fff&bold=true",
+    image: deepa,
   },
   {
-    name: "Dr. Sujatha G Kankarne",
+    name: "Dr. Umme Hafeefa",
     role: "Consultant Homeopath",
-    description: "Expert in treating lifestyle disorders and mental health conditions with a gentle, understanding approach.",
+    description:
+      "Expert in treating lifestyle disorders and mental health conditions with a gentle, understanding approach.",
     specialties: ["Mental Health", "Lifestyle Disorders", "Allergies"],
-    image: "https://ui-avatars.com/api/?name=Dr.+Sujatha+G+Kankarne&size=400&background=6366f1&color=fff&bold=true",
+    image: umme,
   },
 ];
 
 const DoctorsSection = () => {
   return (
-    <section id="doctors" className="py-24 bg-background">
+    <section id="doctors" className="py-16 sm:py-20 lg:py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <Users className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Meet Our Experts</span>
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 sm:px-4 py-2 mb-4 sm:mb-6">
+            <Users className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+            <span className="text-xs sm:text-sm font-medium text-primary">
+              Meet Our Experts
+            </span>
           </div>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
+
+          <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 sm:mb-6">
             Our <span className="text-primary">Experienced</span> Doctors
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Our team of dedicated homeopathic physicians combines decades of experience 
-            with a deep commitment to classical homeopathic principles.
+
+          <p className="text-base sm:text-lg text-muted-foreground">
+            Our team of dedicated homeopathic physicians combines decades of
+            experience with a deep commitment to classical homeopathic
+            principles.
           </p>
         </div>
 
-        {/* Doctors grid */}
-        <div className="grid md:grid-cols-3 gap-8">
+        {/* Doctors Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {doctors.map((doctor, index) => (
             <div
               key={index}
-              className="group bg-card rounded-2xl p-8 shadow-card hover:shadow-elevated transition-all duration-500 hover:-translate-y-2"
+              className="group bg-card rounded-xl lg:rounded-2xl p-6 lg:p-8 shadow-card hover:shadow-elevated transition-all duration-500 hover:-translate-y-2"
             >
               {/* Doctor Image */}
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-6 overflow-hidden border-4 border-primary/20 shadow-lg bg-primary/10">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full mx-auto mb-4 sm:mb-6 overflow-hidden border-4 border-primary/20 shadow-lg bg-primary/10">
                 <img
                   src={doctor.image}
                   alt={doctor.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    // Use avatar API as fallback
-                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.name)}&size=160&background=6366f1&color=fff&bold=true`;
-                    target.onerror = null; // Prevent infinite loop
+                    const target = e.target;
+                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      doctor.name
+                    )}&size=160&background=6366f1&color=fff&bold=true`;
+                    target.onerror = null;
                   }}
                 />
               </div>
 
               {/* Info */}
               <div className="text-center">
-                <h3 className="font-heading text-2xl font-bold text-foreground mb-2">
+                <h3 className="font-heading text-xl sm:text-2xl font-bold text-foreground mb-2">
                   {doctor.name}
                 </h3>
-                <p className="text-primary font-medium mb-4">{doctor.role}</p>
-                <p className="text-muted-foreground text-sm mb-6">{doctor.description}</p>
+
+                <p className="text-primary font-medium mb-3 sm:mb-4 text-sm sm:text-base">
+                  {doctor.role}
+                </p>
+
+                <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed">
+                  {doctor.description}
+                </p>
 
                 {/* Specialties */}
-                <div className="flex flex-wrap justify-center gap-2">
+                <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                   {doctor.specialties.map((specialty, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full"
+                      className="px-2 sm:px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full"
                     >
                       {specialty}
                     </span>
@@ -86,14 +104,14 @@ const DoctorsSection = () => {
                 </div>
               </div>
 
-              {/* Decorative elements */}
-              <div className="flex justify-center gap-4 mt-6 pt-6 border-t border-border">
+              {/* Footer */}
+              <div className="flex justify-center gap-3 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-border">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <GraduationCap className="w-4 h-4" />
+                  <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="text-xs">BHMS</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Award className="w-4 h-4" />
+                  <Award className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="text-xs">Certified</span>
                 </div>
               </div>

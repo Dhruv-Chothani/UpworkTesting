@@ -8,7 +8,7 @@ const HeroSection = () => {
   const { content } = useContent();
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-32 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center pt-24 sm:pt-32 overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -22,13 +22,13 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6 animate-fade-in">
-            <Leaf className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">{content.heroBadgeText}</span>
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 sm:px-4 py-2 mb-4 sm:mb-6 animate-fade-in">
+            <Leaf className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+            <span className="text-xs sm:text-sm font-medium text-primary">{content.heroBadgeText}</span>
           </div>
 
           {/* Main heading */}
-          <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6 animate-fade-in-up">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight mb-4 sm:mb-6 animate-fade-in-up">
             {content.heroTitle.includes('Homeopathy') ? (
               <>
                 {content.heroTitle.split('Homeopathy')[0]}
@@ -41,38 +41,38 @@ const HeroSection = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-in-delay leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 animate-fade-in-delay leading-relaxed">
             {content.heroSubtitle}
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-wrap gap-4 mb-12 animate-fade-in-delay">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-12 animate-fade-in-delay">
             <Link to="/book">
-              <Button variant="hero" size="xl" className="group">
+              <Button variant="hero" size="lg" className="w-full sm:w-auto group">
                 Book Consultation
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/about">
-              <Button variant="outline" size="xl">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 Learn More
               </Button>
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-6 animate-fade-in-delay">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 animate-fade-in-delay">
             {content.stats.map((stat, index) => {
               const icons = [Heart, Shield, Leaf];
               const Icon = icons[index % icons.length];
               return (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-primary" />
+                <div key={index} className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="font-heading text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="font-heading text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                   </div>
                 </div>
               );

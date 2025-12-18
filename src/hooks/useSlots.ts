@@ -2,14 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '@/lib/api';
 
 export interface TimeSlot {
-  id: string;
+  id?: string;
+  _id?: string;
   time: string; // e.g., "09:00", "09:30"
   label: string; // e.g., "9:00 AM"
   isActive: boolean;
 }
 
 export interface Booking {
-  id: string;
+  id?: string;
+  _id?: string;
   date: string; // YYYY-MM-DD
   slotId: string;
   slotTime: string;
@@ -150,6 +152,15 @@ export const useSlots = (options?: { admin?: boolean }) => {
     });
   };
 
+  const deleteBooking = (id: string) => {
+    return apiFetch(`/api/bookings/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    }).then(() => {
+      setBookings(bookings.filter((b) => b.id !== id));
+    });
+  };
+
   const updateBookingStatus = (id: string, status: Booking['status']) => {
     return apiFetch<Booking>(`/api/bookings/${id}/status`, {
       method: 'PATCH',
@@ -173,6 +184,7 @@ export const useSlots = (options?: { admin?: boolean }) => {
     addSlot,
     updateSlot,
     deleteSlot,
+    deleteBooking,
     toggleSlotActive,
     getAvailableSlots,
     isSlotBooked,

@@ -159,15 +159,15 @@ const AdminBlogs = () => {
   if (editing) {
     return (
       <div>
-        <h1 className="font-heading text-3xl font-bold mb-8">
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">
           {isNew ? "Create New Blog" : "Edit Blog"}
         </h1>
 
-        <div className="bg-card rounded-xl p-6 shadow-card space-y-4 max-w-3xl">
+        <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card space-y-3 sm:space-y-4 max-w-3xl">
 
           {/* Title */}
           <div>
-            <label className="font-medium">Title</label>
+            <label className="font-medium text-sm sm:text-base">Title</label>
             <input
               value={editing.title}
               onChange={(e) =>
@@ -182,20 +182,20 @@ const AdminBlogs = () => {
                 })
               }
               placeholder="Enter blog title"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
             />
           </div>
 
           {/* Slug */}
           <div>
-            <label className="font-medium">Slug (URL)</label>
+            <label className="font-medium text-sm sm:text-base">Slug (URL)</label>
             <input
               value={editing.slug}
               onChange={(e) =>
                 setEditing({ ...editing, slug: e.target.value })
               }
               placeholder="blog-title-here"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
             />
             <p className="text-xs text-muted-foreground">
               URL will be: /blog/{editing.slug || "example"}
@@ -203,48 +203,48 @@ const AdminBlogs = () => {
           </div>
 
           {/* Category + Author */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="font-medium">Category</label>
+              <label className="font-medium text-sm sm:text-base">Category</label>
               <input
                 value={editing.category}
                 onChange={(e) =>
                   setEditing({ ...editing, category: e.target.value })
                 }
                 placeholder="Education, Treatment, Philosophy..."
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
               />
             </div>
             <div>
-              <label className="font-medium">Author</label>
+              <label className="font-medium text-sm sm:text-base">Author</label>
               <input
                 value={editing.author}
                 onChange={(e) =>
                   setEditing({ ...editing, author: e.target.value })
                 }
                 placeholder="Author name"
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
               />
             </div>
           </div>
 
           {/* Image Upload */}
           <div>
-            <label className="font-medium">Blog Image</label>
+            <label className="font-medium text-sm sm:text-base">Blog Image</label>
             
             {/* Toggle between URL and Upload */}
             <div className="flex gap-2 mb-2">
               <button
                 type="button"
                 onClick={() => setEditing({ ...editing, _imageSource: 'url' })}
-                className={`px-3 py-1 text-sm rounded ${editing._imageSource === 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${editing._imageSource === 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
               >
                 Image URL
               </button>
               <button
                 type="button"
                 onClick={() => setEditing({ ...editing, _imageSource: 'upload' })}
-                className={`px-3 py-1 text-sm rounded ${editing._imageSource !== 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded ${editing._imageSource !== 'url' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
               >
                 Upload Image
               </button>
@@ -264,7 +264,7 @@ const AdminBlogs = () => {
                     });
                   }}
                   placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                 />
                 {editing.image && !editing.image.startsWith('blob:') && !editing.image.startsWith('data:') && (
                   <div className="mt-2">
@@ -336,7 +336,7 @@ const AdminBlogs = () => {
 
           {/* Excerpt */}
           <div>
-            <label className="font-medium">Short Excerpt</label>
+            <label className="font-medium text-sm sm:text-base">Short Excerpt</label>
             <textarea
               value={editing.excerpt}
               onChange={(e) =>
@@ -344,13 +344,13 @@ const AdminBlogs = () => {
               }
               placeholder="Short summary shown on blog list..."
               rows={2}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
             />
           </div>
 
           {/* Content */}
           <div>
-            <label className="font-medium">Full Content (HTML)</label>
+            <label className="font-medium text-sm sm:text-base">Full Content (HTML)</label>
             <textarea
               value={editing.content}
               onChange={(e) =>
@@ -358,12 +358,12 @@ const AdminBlogs = () => {
               }
               placeholder="<p>Your blog content here...</p>"
               rows={10}
-              className="w-full px-4 py-2 border rounded-lg font-mono text-sm"
+              className="w-full px-3 sm:px-4 py-2 border rounded-lg font-mono text-xs sm:text-sm"
             />
           </div>
 
           {/* Published Toggle */}
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-sm sm:text-base">
             <input
               type="checkbox"
               checked={editing.published}
@@ -375,8 +375,8 @@ const AdminBlogs = () => {
           </label>
 
           {/* Buttons */}
-          <div className="flex gap-2">
-            <Button variant="hero" onClick={handleSave}>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="hero" onClick={handleSave} className="text-sm sm:text-base">
               Save
             </Button>
             <Button
@@ -385,6 +385,7 @@ const AdminBlogs = () => {
                 setEditing(null);
                 setIsNew(false);
               }}
+              className="text-sm sm:text-base"
             >
               Cancel
             </Button>
@@ -400,9 +401,9 @@ const AdminBlogs = () => {
   if (loading) {
     return (
       <div>
-        <h1 className="font-heading text-3xl font-bold mb-8">Manage Blogs</h1>
-        <div className="bg-card rounded-xl p-6 shadow-card">
-          <p className="text-muted-foreground">Loading blogs...</p>
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Manage Blogs</h1>
+        <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card">
+          <p className="text-muted-foreground text-sm sm:text-base">Loading blogs...</p>
         </div>
       </div>
     );
@@ -410,48 +411,49 @@ const AdminBlogs = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="font-heading text-3xl font-bold">Manage Blogs</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6 sm:mb-8">
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold">Manage Blogs</h1>
         <Button
           variant="hero"
           onClick={() => {
             setEditing(emptyBlog);
             setIsNew(true);
           }}
+          className="text-sm sm:text-base w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
           New Blog
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {blogs.length === 0 ? (
-          <div className="bg-card rounded-xl p-6 shadow-card text-center">
-            <p className="text-muted-foreground">No blogs yet. Create your first blog!</p>
+          <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card text-center">
+            <p className="text-muted-foreground text-sm sm:text-base">No blogs yet. Create your first blog!</p>
           </div>
         ) : (
           blogs.map((blog) => (
           <div
             key={blog.id}
-            className="bg-card rounded-xl p-4 shadow-card flex items-center justify-between"
+            className="bg-card rounded-xl p-3 sm:p-4 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
               {blog.image && (
                 <img
                   src={blog.image}
                   alt=""
-                  className="w-16 h-16 rounded object-cover"
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded object-cover flex-shrink-0"
                 />
               )}
-              <div>
-                <p className="font-semibold">{blog.title}</p>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm sm:text-base truncate">{blog.title}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   {blog.category} • {blog.author}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-center">
 
               {blog.published && (
                 <Link
