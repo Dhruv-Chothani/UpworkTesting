@@ -37,7 +37,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Dashboard</h1>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -65,7 +65,6 @@ const AdminDashboard = () => {
                 <span className={`px-2 py-1 rounded text-xs whitespace-nowrap ${b.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
                   {b.status}
                 </span>
-               
               </div>
             </div>
           ))}
